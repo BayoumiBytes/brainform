@@ -1,6 +1,5 @@
 "use client";
 
-import { VerifyToken } from "@/app/action/verifyauthentiction";
 import {
   authService,
   AuthState,
@@ -39,22 +38,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        VerifyToken().then((payload) => {
-          if (payload && typeof payload === "object" && "sub" in payload) {
-            const user = payload.sub;
-            setAuthState({
-              user,
-              isLoading: false,
-              isAuthenticated: true,
-            });
-          } else {
-            setAuthState({
-              user: null,
-              isLoading: false,
-              isAuthenticated: false,
-            });
-          }
-        });
+        const response = await fetch("/api/getuser");
+        if (response.ok) {
+          const user = await response.json();
+          setAuthState({
+            user,
+            isLoading: false,
+            isAuthenticated: true,
+          });
+        } else {
+          setAuthState({
+            user: null,
+            isLoading: false,
+            isAuthenticated: false,
+          });
+        }
       } catch (error) {
         setAuthState({
           user: null,
